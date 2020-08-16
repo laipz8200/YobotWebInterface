@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>用户信息</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn flat round dense icon="ion-undo" class="q-mr-sm" @click="history.go(-1)"></q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>[[ nickname ]] - 用户信息</q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          {% if user.qqid != visitor.qqid and visitor.authority_group >= 100 %}{# 不是本人且不是管理员 -#}
+          <div class="row justify-center q-my-md">
+            <div class="col-auto">
+              <q-banner inline-actions class="text-white bg-red">
+                你无权查看这个页面
+              </q-banner>
+            </div>
+          </div>
+          {%- else %}{# 本人或管理员 -#}
+          <div class="row justify-center q-my-md">
+            <div class="col-auto">
+              <q-avatar size="10rem">
+                <img :src="'https://q1.qlogo.cn/g?b=qq&nk=' + {{user.qqid}} + '&s=640'">
+              </q-avatar>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">用户昵称</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">[[ nickname ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">用户权限</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">[[ authtype[{{ user.authority_group }}] ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">公会群号</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">{{ user.clan_group_id }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">上次登录</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">[[ from_ts({{ session.get('last_login_time') }}) ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">登录地址</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">{{ session.get('last_login_ipaddr') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-6">
+              <div class="row justify-between items-end">
+                <div class="col-auto"><span class="text-body1">登录地点</span></div>
+                <div class="col-auto">
+                  <span class="text-body2">[[ addr.join('') ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-12 col-sm-10 col-md-8 q-pa-xs">
+              <q-btn class="full-width" icon="ion-create" label="修改昵称" color="info" @click="edit = true"></q-btn>
+              <q-dialog full-width v-model="edit" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">修改昵称</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="nickname" @keyup.enter="edit_nickname">
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认修改" v-close-popup @click="edit_nickname"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+          </div>
+          {% endif %}
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>
+  var vm = new Vue({
+    el: '#q-app',
+    data: {
+      bg_url: "{{ url_for('yobot_static', filename='bg.jpeg') }}",
+      addr: [],
+      nickname: '{{ user.nickname }}',
+      edit: false,
+      authtype: {
+        1: '主人',
+        2: '机器人管理员',
+        10: '公会战管理员',
+        100: '成员',
+      },
+    },
+    mounted() {
+      var thisvue = this;
+      axios.get('{{ url_for("yobot_api_iplocation", ip=user.last_login_ipaddr) }}').then(function (res) {
+        thisvue.addr = res.data;
+      }).catch(function (error) {
+        console.log(error);
+        thisvue.addr = ['未知'];
+      });
+    },
+    methods: {
+      edit_nickname: function (event) {
+        var thisvue = this;
+        axios.put('{{ url_for("yobot_user_info_nickname", qqid=user.qqid) }}', { nickname: thisvue.nickname }).then(function (res) {
+          thisvue.edit = false;
+        }).catch(function (error) {
+          alert('改名失败');
+          console.log(error);
+        })
+      },
+      from_ts: function (ts) {
+        if (ts == 0) {
+          return '-';
+        }
+        var nd = new Date();
+        nd.setTime(ts * 1000);
+        return nd.toLocaleString('chinese', { hour12: false });
+      },
+    },
+    delimiters: ['[[', ']]'],
+  })
+</script>
+
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>公会战设置</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+<script>
+  var bg_url = "{{ url_for('yobot_static', filename='bg.jpeg') }}"
+</script>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn flat round dense icon="ion-undo" class="q-mr-sm" @click="history.go(-1)"></q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>[[ groupData.group_name ]] - 公会战设置</q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <q-form @submit="submit">
+            <div class="row items-start q-my-md">
+              <div class="col-4">
+                <span class="text-h6">游戏区服</span>
+              </div>
+              <div class="col">
+                <q-select filled v-model="form.game_server" :options="options" emit-value map-options>
+                  <template v-slot:prepend>
+                    <q-icon name="ion-globe"></q-icon>
+                  </template>
+                </q-select>
+              </div>
+            </div>
+
+            <div class="row items-start q-my-md">
+              <div class="col-4">
+                <span class="text-h6">隐私设置</span>
+              </div>
+              <div class="col">
+                <q-checkbox v-model="form.privacy.allow_guest" label="出刀表无需登录"></q-checkbox>
+                <q-checkbox v-model="form.privacy.allow_statistics_api" label="允许api获取数据"></q-checkbox>
+              </div>
+            </div>
+
+            <div class="row items-start q-my-md">
+              <div class="col-4">
+                <span class="text-h6">通知到群</span>
+              </div>
+              <div class="col">
+                <q-checkbox v-model="form.notify.challenge" label="伤害上报"></q-checkbox>
+                <q-checkbox v-model="form.notify.undo" label="撤销上报"></q-checkbox>
+                <q-checkbox v-model="form.notify.apply" label="申请出刀"></q-checkbox>
+                <q-checkbox v-model="form.notify.cancelapply" label="取消申请"></q-checkbox>
+                <q-checkbox v-model="form.notify.subscribe" label="预约头目"></q-checkbox>
+                <q-checkbox v-model="form.notify.cancelsubscribe" label="取消预约"></q-checkbox>
+                <q-checkbox v-model="form.notify.suspend" label="记录挂树"></q-checkbox>
+                <q-checkbox v-model="form.notify.cancelsuspend" label="取消挂树"></q-checkbox>
+                <q-checkbox v-model="form.notify.modify" label="修改状态"></q-checkbox>
+                <q-checkbox v-model="form.notify.sl" label="使用 S/L"></q-checkbox>
+              </div>
+            </div>
+
+            <div class="row q-my-md">
+              <div class="col q-pd-xs">
+                <q-btn class="full-width" color="primary" label="确认修改" type="submit"></q-btn>
+              </div>
+            </div>
+          </q-form>
+
+          <div class="row justify-center">
+            <div class="col-auto">
+              <span class="text-h5">现在档案编号：[[ battle_id ]]</span>
+            </div>
+          </div>
+
+          <div class="row justify-around q-my-md">
+            <div class="col-4 q-px-xs">
+              <q-btn class="full-width" label="导出数据" color="info" @click="export_data"></q-btn>
+            </div>
+            <div class="col-4 q-px-xs">
+              <q-btn class="full-width" label="切换档案" color="warning"
+                @click="get_data_slot_record_count();switchVisible = true"></q-btn>
+              <q-dialog full-width v-model="switchVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">切换档案</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <div class="text-body1">你可以切换存档编号以记录不同期的公会战数据，这样能保留历史数据，也可以在统计里随时查看</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <div class="row justify-center q-my-xs" v-for="item in data_slot_record_count">
+                      <div class="col-auto">
+                        [[ item.battle_id ]]号存档: [[ item.record_count ]]条记录
+                      </div>
+                    </div>
+                  </q-card-section>
+
+                  <q-form @submit="switch_data_slot">
+                    <q-card-section class="q-pt-none">
+                      <q-input type="number" filled v-model.number="battle_id" label="档案编号"
+                        :rules="[ val => val >= 0 || '档案编号不能小于0']"></q-input>
+                    </q-card-section>
+
+                    <q-card-actions align="right" class="text-primary">
+                      <q-btn class="q-mr-md" flat label="取消" v-close-popup></q-btn>
+                      <q-btn label="确认切换" color="negative" type="submit"></q-btn>
+                    </q-card-actions>
+                  </q-form>
+                </q-card>
+              </q-dialog>
+            </div>
+            <div class="col-4 q-px-xs">
+              <q-btn class="full-width" label="删除数据" color="negative" @click="confirmVisible = true"></q-btn>
+              <q-dialog full-width v-model="confirmVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">警告</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <div class="text-body1">此操作会删除 [[ battle_id ]] 号存档中所有数据</div>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn class="q-mr-md" flat label="取消" v-close-popup></q-btn>
+                    <q-btn label="确认删除" color="negative" @click="clear_data_slot"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+          </div>
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+<script>
+  window.quasarConfig = {
+    notify: {
+      type: 'info',
+      position: 'top-right',
+      progress: true,
+      timeout: 1500,
+      closeBtn: 'x'
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>var csrf_token = "{{ session['csrf_token'] }}";</script>
+<script src="{{ url_for('yobot_static', filename='clan/setting.js') }}"></script>
+
+</html>

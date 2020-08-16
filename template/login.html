@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>登录</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-undo" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>登录</q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-8">
+              {% if reason -%}
+              <q-banner inline-actions class="text-white bg-red">
+                {{ reason }}
+              </q-banner>
+              {% endif -%}
+            </div>
+          </div>
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-8">
+              {% if advice -%}
+              <q-banner inline-actions class="text-white bg-primary">
+                {{ advice }}
+              </q-banner>
+              {% endif -%}
+            </div>
+          </div>
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-10 col-md-8">
+              <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+                <q-input clearable filled v-model="form.qq" label="QQ号" lazy-rules
+                  :rules="[ val => val && val.length > 0 || '请输入QQ号']"></q-input>
+
+                <q-input clearable filled type="password" v-model="form.pwd" label="密码" hint="该密码不是你的QQ密码" lazy-rules
+                  :rules="[ val => val && val.length > 0 || '请输入密码']"></q-input>
+
+                <div class="row q-my-md justify-between">
+                  <div class="col-xs-12 col-sm-6 q-pa-xs">
+                    <q-btn class="full-width" label="登录" type="submit" color="primary"></q-btn>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 q-pa-xs">
+                    <q-btn class="full-width" label="重置" type="reset" color="primary"></q-btn>
+                  </div>
+                </div>
+              </q-form>
+            </div>
+          </div>
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='password.js') }}"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>
+  new Vue({
+    el: '#q-app',
+    data: {
+      bg_url: "{{ url_for('yobot_static', filename='bg.jpeg') }}",
+      form: {
+        qq: "",
+        pwd: ""
+      },
+      rules: {
+        qq: [
+          { required: true, message: '必须输入您的QQ号', trigger: 'blur' }
+        ],
+        pwd: [
+          { required: true, message: '必须输入您的密码', trigger: 'blur' },
+        ],
+      }
+    },
+    methods() {
+      if (localStorage.login_qqid) {
+        this.form.qq = String(localStorage.login_qqid);
+      }
+    },
+    methods: {
+      post: function (url, params) {
+        //创建form表单
+        const temp_form = document.createElement("form");
+        temp_form.action = url;
+        //如需打开新窗口，form的target属性要设置为'_blank'
+        // temp_form.target = "_blank";
+        temp_form.method = "post";
+        temp_form.style.display = "none";
+        //添加参数
+        for (const key in params) {
+          const opt = document.createElement("textarea");
+          opt.name = key;
+          opt.value = params[key];
+          temp_form.appendChild(opt);
+        }
+        document.body.appendChild(temp_form);
+        //提交数据
+        temp_form.submit();
+      },
+      onSubmit: function () {
+        localStorage.login_qqid = this.form.qq;
+        const url = "{{ url_for('yobot_login') }}";
+        this.post(url, {
+          qqid: this.form.qq,
+          pwd: getHashWithSalt(this.form.pwd + this.form.qq)
+        });
+      },
+      onReset: function () {
+        this.form.qq = null
+        this.form.pwd = null
+      }
+    }
+  })
+</script>
+
+</html>

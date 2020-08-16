@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>出刀记录</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+<script>
+  var bg_url = "{{ url_for('yobot_static', filename='bg.jpeg') }}"
+</script>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn flat round dense icon="ion-undo" class="q-mr-sm" @click="history.go(-1)"></q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>[[ nickname ]]的出刀记录</q-toolbar-title>
+          <q-tabs v-if="$q.platform.is.desktop" v-model="activeIndex" align="right" inline-label @input="handleSelect">
+            <q-tab name="1" label="面板"></q-tab>
+            <q-tab name="2" label="预约"></q-tab>
+            <q-tab name="3" label="查刀"></q-tab>
+            <q-tab name="4" label="统计"></q-tab>
+            <q-tab name="5" label="记录"></q-tab>
+          </q-tabs>
+          <q-separator dark vertical inset></q-separator>
+          <q-btn type="a" href="../setting/" flat round dense icon="ion-cog" class="q-ml-sm" @click="leavePage = true">
+        </q-toolbar>
+        <q-tabs v-if="$q.platform.is.mobile" v-model="activeIndex" align="justify" inline-label @input="handleSelect">
+          <q-tab name="1" label="面板"></q-tab>
+          <q-tab name="2" label="预约"></q-tab>
+          <q-tab name="3" label="查刀"></q-tab>
+          <q-tab name="4" label="统计"></q-tab>
+          <q-tab name="5" label="记录"></q-tab>
+        </q-tabs>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <div class="row jusitfy-center items-center q-my-md">
+            <div class="col">
+              <!-- 表格 -->
+              <q-table :data="challengeData" :columns="columns" row-key="pcrdate" hide-no-data
+                hide-pagination hide-selected-banner :pagination="{rowsPerPage: 0}">
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="time" :props="props" @click="props.expand = !props.expand">
+                      [[ props.row.pcrdate ]]
+                    </q-td>
+                    <q-td key="progress" :props="props" @click="props.expand = !props.expand">
+                      [[ totalDamage(props.row.detail) ]]
+                    </q-td>
+                    <q-td :class="cellColor(props.row.finished)" key="progress" :props="props" @click="props.expand = !props.expand" auto-width>
+                      [[ props.row.finished ]]
+                    </q-td>
+                    <q-td key="details" :props="props" auto-width>
+                      <q-btn size="sm" flat round @click="props.expand = !props.expand"
+                        :icon="props.expand ? 'ion-arrow-dropdown' : 'ion-arrow-dropright'"></q-btn>
+                    </q-td>
+                  </q-tr>
+
+                  <q-tr v-show="props.expand" :props="props">
+                    <q-td colspan="100%">
+                      <div class="row q-pa-xs">
+                        <div class="col-auto text-body2">第一刀:</div>
+                        <div class="col q-mx-md text-body2">
+                          <template v-if="props.row.detail[0]">
+                            <span>
+                              [[ csummary(props.row.detail[0]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[0])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else>
+                            <span>未出刀</span>
+                          </template>
+
+                          <template v-if="props.row.detail[1]">
+                            <span class="q-ml-md">
+                              [[ csummary(props.row.detail[1]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[1])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else-if="props.row.detail[0] && !props.row.detail[0].health_ramain">
+                            <span class="q-ml-md">补偿刀未出</span>
+                          </template>
+                        </div>
+                      </div>
+
+                      <div class="row q-pa-xs">
+                        <div class="col-auto text-body2">第二刀:</div>
+                        <div class="col q-mx-md text-body2">
+                          <template v-if="props.row.detail[2]">
+                            <span>
+                              [[ csummary(props.row.detail[2]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[2])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else>
+                            <span>未出刀</span>
+                          </template>
+
+                          <template v-if="props.row.detail[3]">
+                            <span class="q-ml-md">
+                              [[ csummary(props.row.detail[3]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[3])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else-if="props.row.detail[2] && !props.row.detail[2].health_ramain">
+                            <span class="q-ml-md">补偿刀未出</span>
+                          </template>
+                        </div>
+                      </div>
+
+                      <div class="row q-pa-xs">
+                        <div class="col-auto text-body2">第三刀:</div>
+                        <div class="col q-mx-md text-body2">
+                          <template v-if="props.row.detail[4]">
+                            <span>
+                              [[ csummary(props.row.detail[4]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[4])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else>
+                            <span>未出刀</span>
+                          </template>
+
+                          <template v-if="props.row.detail[5]">
+                            <span class="q-ml-md">
+                              [[ csummary(props.row.detail[5]) ]]
+                            </span>
+                            <q-icon name="ion-information-circle-outline">
+                              <q-popup-proxy>
+                                <q-banner>
+                                  <span v-html="cdetail(props.row.detail[5])"></span>
+                                </q-banner>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                          <template v-else-if="props.row.detail[4] && !props.row.detail[4].health_ramain">
+                            <span class="q-ml-md">补偿刀未出</span>
+                          </template>
+                        </div>
+                      </div>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </div>
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+<script>
+  window.quasarConfig = {
+    notify: {
+      type: 'info',
+      position: 'top-right',
+      progress: true,
+      timeout: 1500,
+      closeBtn: 'x'
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>var csrf_token = "{{ session['csrf_token'] }}";</script>
+<script src="{{ url_for('yobot_static', filename='clan/user.js') }}"></script>
+
+</html>

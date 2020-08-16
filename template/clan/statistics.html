@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>数据分析</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+<script>
+  var bg_url = "{{ url_for('yobot_static', filename='bg.jpeg') }}"
+</script>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn flat round dense icon="ion-undo" class="q-mr-sm" @click="history.go(-1)"></q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>数据分析</q-toolbar-title>
+          <q-tabs v-if="$q.platform.is.desktop" v-model="activeIndex" align="right" inline-label @input="handleSelect">
+            <q-tab name="1" label="面板"></q-tab>
+            <q-tab name="2" label="预约"></q-tab>
+            <q-tab name="3" label="查刀"></q-tab>
+            <q-tab name="4" label="统计"></q-tab>
+            <q-tab name="5" label="记录"></q-tab>
+          </q-tabs>
+          <q-separator dark vertical inset></q-separator>
+          <q-btn type="a" href="../setting/" flat round dense icon="ion-cog" class="q-ml-sm">
+        </q-toolbar>
+        <q-tabs v-if="$q.platform.is.mobile" v-model="activeIndex" align="justify" inline-label @input="handleSelect">
+          <q-tab name="1" label="面板"></q-tab>
+          <q-tab name="2" label="预约"></q-tab>
+          <q-tab name="3" label="查刀"></q-tab>
+          <q-tab name="4" label="统计"></q-tab>
+          <q-tab name="5" label="记录"></q-tab>
+        </q-tabs>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <div class="row justify-center q-my-md">
+            <div class="col-auto"><span class="text-h6">图表分析</span></div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 q-pa-xs">
+              <q-card class="my-card">
+                <q-img src="{{ url_for('yobot_static', filename='statistics/statistical_figure.webp') }}">
+                  <div class="absolute-top">
+                    <span class="text-h6">数据图表</span>
+                    <span class="text-caption">by <a target="_blank" href="https://github.com/Diving-Fish">@Diving-Fish</a> & <a
+                        target="_blank" href="https://github.com/winrey">@Winrey</a></span>
+                  </div>
+                </q-img>
+
+                <q-card-actions>
+                  <q-btn type="a" href="./2/" flat class="full-width">立即查看</q-btn>
+                </q-card-actions>
+              </q-card>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 q-pa-xs">
+              <q-card class="my-card">
+                <q-img src="{{ url_for('yobot_static', filename='statistics/order.webp') }}">
+                  <div class="absolute-top">
+                    <span class="text-h6">出刀顺序表</span>
+                    <span class="text-caption">by <a target="_blank" href="https://github.com/Ai-Himmel">@Ai-Himmel</a></span>
+                  </div>
+                </q-img>
+
+                <q-card-actions>
+                  <q-btn type="a" href="./1/" flat class="full-width">立即查看</q-btn>
+                </q-card-actions>
+              </q-card>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 q-pa-xs">
+              <q-card class="my-card">
+                <q-img src="{{ url_for('yobot_static', filename='statistics/multidimensional.webp') }}">
+                  <div class="absolute-top">
+                    <span class="text-h6">多维度分析</span>
+                    <span class="text-caption">by <a target="_blank" href="https://github.com/Tan90Qian">@Tan90Qian</a></span>
+                  </div>
+                </q-img>
+
+                <q-card-actions>
+                  <q-btn type="a" :href="url" flat class="full-width">立即查看(需要API访问)</q-btn>
+                </q-card-actions>
+              </q-card>
+            </div>
+          </div>
+          <!-- 更多统计方式欢迎提交 pull request，建议采用 api 调用的方式 -->
+
+          <div class="row justify-center q-my-md">
+            <div class="col-auto"><span class="text-h6">原始数据(JSON)</span></div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-xs-6 col-sm-3 col-md-4 q-pa-xs">
+              <q-btn type="a" href="./api/" label="查看本轮" color="primary" class="full-width"></q-btn>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-4 q-pa-xs">
+              <q-btn type="a" href="./api/" download label="下载本轮" color="primary" class="full-width"></q-btn>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-4 q-pa-xs">
+              <q-btn type="a" href="./api/?battle_id=all" label="查看全部" color="primary" class="full-width"></q-btn>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-4 q-pa-xs">
+              <q-btn type="a" href="./api/?battle_id=all" label="下载全部" color="primary" class="full-width"></q-btn>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-auto"><span class="text-h6">API</span></div>
+          </div>
+
+          <div class="row q-my-md justify-center">
+            <div class="col-xs-10 col-sm-8 col-md-6">
+              {% if allow_api -%}
+              <q-input v-model="apiurl" class="full-width">
+                <template v-slot:after>
+                  <q-btn round dense flat icon="ion-copy" id="copy" @click="doCopy"></q-btn>
+                </template>
+              </q-input>
+              {% else -%}
+              <span class="text-body1">请前往<a href="../setting/">公会设置</a>开启API访问</span>
+              {% endif -%}
+            </div>
+          </div>
+          <!-- - api说明：
+          公会战管理员在设置中开启“允许外部api调用”后，可在外部直接调用，
+          也可以直接下载json文件
+
+          参数：
+
+          apikey：外部调用时必填
+          battle_id：整数，公会战的场次号码，填“current”获取当前，填“all”则获取所有，默认值“current”
+
+          返回数据：
+
+          code：0是成功，其他值是失败
+          api_version：api版本号，整数
+          message：失败原因
+          groupinfo：群组信息
+          members：成员列表
+          challenges：出刀记录表 -->
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+i
+<script src="{{ url_for('yobot_static', filename='js/vue-clipboard.min.js') }}"></script>i
+<script>
+  window.quasarConfig = {
+    notify: {
+      type: 'info',
+      position: 'top-right',
+      progress: true,
+      timeout: 1500,
+      closeBtn: 'x'
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>
+  var vm = new Vue({
+    el: "#q-app",
+    data: {
+      activeIndex: '4',
+      apiurl: '',
+      url: '#',
+    },
+    mounted() {
+      var apikey = "{{ apikey }}";
+      var apiurl = window.location.href + "api/?apikey=" + apikey
+      this.apiurl = apiurl;
+      this.url = "http://tools.yobot.win/pcrd-yobot-fe/#" + encodeURIComponent(apiurl)
+    },
+    methods: {
+      doCopy() {
+        this.$copyText(this.apiurl).then(function (e) {
+          alert('已复制到剪贴板')
+        }, function (e) {
+          alert('复制失败')
+        })
+      },
+      handleSelect(key, keyPath) {
+        switch (key) {
+          case '1':
+            window.location = '../';
+            break;
+          case '2':
+            window.location = '../subscribers/';
+            break;
+          case '3':
+            window.location = '../progress/';
+            break;
+          case '4':
+            window.location = '../statistics/';
+            break;
+          case '5':
+            window.location = `../my/`;
+            break;
+        }
+      },
+    },
+  })
+</script>
+
+</html>

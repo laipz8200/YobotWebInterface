@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>公会战</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
+</head>
+<script>
+  var bg_url = "{{ url_for('yobot_static', filename='bg.jpeg') }}"
+</script>
+
+<body>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_user') }}" flat round dense icon="ion-undo" class="q-mr-sm"
+            @click="leavePage = true"></q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>[[ groupData.group_name ]]</q-toolbar-title>
+          <q-tabs v-if="$q.platform.is.desktop" v-model="activeIndex" align="right" inline-label @input="handleSelect">
+            <q-tab name="1" label="面板"></q-tab>
+            <q-tab name="2" label="预约"></q-tab>
+            <q-tab name="3" label="查刀"></q-tab>
+            <q-tab name="4" label="统计"></q-tab>
+            <q-tab name="5" label="记录"></q-tab>
+          </q-tabs>
+          <q-separator dark vertical inset></q-separator>
+          <q-btn type="a" href="./setting/" flat round dense icon="ion-cog" class="q-ml-sm" @click="leavePage = true">
+          </q-btn>
+        </q-toolbar>
+        <q-tabs v-if="$q.platform.is.mobile" v-model="activeIndex" align="justify" inline-label @input="handleSelect">
+          <q-tab name="1" label="面板"></q-tab>
+          <q-tab name="2" label="预约"></q-tab>
+          <q-tab name="3" label="查刀"></q-tab>
+          <q-tab name="4" label="统计"></q-tab>
+          <q-tab name="5" label="记录"></q-tab>
+        </q-tabs>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <div class="row justify-around items-center q-px-xs q-my-md">
+            <div class="col-auto">
+              <div class="row justify-center">
+                <div class="col-auto">
+                  <span class="text-h5">周目</span>
+                </div>
+              </div>
+              <div class="row justify-center">
+                <div class="col-auto">
+                  <span class="text-h3">[[ bossData.cycle ]]</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-auto">
+              <q-knob readonly :value="Math.ceil(bossData.health / bossData.full_health * 100)" show-value
+                :thickness="0.22"
+                :color="Math.ceil(bossData.health / bossData.full_health * 100) > 30 ? 'green' : 'red'"
+                :track-color="Math.ceil(bossData.health / bossData.full_health * 100) > 30 ? 'green-2' : 'red-2'"
+                class="text-primary q-ma-md" size="10rem"></q-knob>
+            </div>
+
+            <div class="col-auto">
+              <div class="row justify-center">
+                <div class="col-auto">
+                  <span class="text-h5">序号</span>
+                </div>
+              </div>
+              <div class="row justify-center">
+                <div class="col-auto">
+                  <span class="text-h3">[[ bossData.num ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-center q-my-md">
+            <div class="col-auto">
+              <span class="text-body1">
+                <q-btn :class="Math.ceil(bossData.health / bossData.full_health * 100) > 30 ? '' : 'text-red text-bold'"
+                  size="lg" flat @click="startmodify">[[
+                  bossData.health.toLocaleString() ]] / [[ bossData.full_health.toLocaleString() ]]</q-btn>
+                <q-dialog full-width v-model="statusFormVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                  <q-card>
+                    <q-card-section>
+                      <div class="text-h6">修改状态</div>
+                    </q-card-section>
+
+                    <q-card-section class="q-pt-none">
+                      <div class="text-body1">如果要清空数据请在"设置"中操作，否则会导致分析数据不准确。</div>
+                    </q-card-section>
+
+                    <q-form @submit="modify">
+                      <q-card-section class="q-pt-none">
+                        <div class="row justify-between">
+                          <div class="col-5">
+                            <q-input type="number" filled v-model.number="bossData.cycle" label="周目" lazy-rules
+                              :rules="[ val => val && val >= 1 || '周目数至少为1']"></q-input>
+                          </div>
+                          <div class="col-5">
+                            <q-input type="number" filled v-model.number="bossData.num" label="编号"
+                              :rules="[ val => val && val >= 1 && val <= 5 || '头目编号必须是1-5之间的整数']"></q-input>
+                          </div>
+                        </div>
+                      </q-card-section>
+
+                      <q-card-section class="q-pt-none">
+                        <q-input type="number" filled v-model.number="bossData.health" label="剩余生命"
+                          :rules="[ val => val && val >= 1 || '剩余生命值至少为1']"></q-input>
+                      </q-card-section>
+
+                      <q-card-actions align="right" class="text-primary">
+                        <q-btn flat label="取消" v-close-popup></q-btn>
+                        <q-btn flat label="确认修改" type="submit"></q-btn>
+                      </q-card-actions>
+                    </q-form>
+                  </q-card>
+                </q-dialog>
+              </span>
+            </div>
+          </div>
+
+          <div v-if="bossData.challenger" class="row justify-center q-my-md">
+            <div class="col-auto">
+              <span class="text-body1 text-secondary text-italic">
+                [[ find_name(bossData.challenger) ]]
+              </span>
+              <span v-if="bossData.lock_type == 1" class="text-body1 text-secondary text-bold">正在奋战中...</span>
+              <span v-else class="text-body1 text-negative text-bold">锁定了头目: [[ bossData.challenging_comment ]]</span>
+            </div>
+          </div>
+
+          {% if is_member -%}
+          <div class="row justify-around q-my-md">
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="申请出刀" color="positive" @click="challengeapply(1)"></q-btn>
+            </div>
+
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="上报伤害" color="primary" @click="recordFormVisible = true"></q-btn>
+              <q-dialog full-width v-model="recordFormVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">上报伤害</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model.number="damage" label="伤害值" @keyup.enter="recordselfdamage"></q-input>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(选填)" @keyup.enter="recordselfdamage" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认上报" v-close-popup @click="recordselfdamage"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="上报尾刀" color="primary" @click="recordDefeatVisible = true"></q-btn>
+              <q-dialog full-width v-model="recordDefeatVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">上报尾刀</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(选填)" @keyup.enter="recordselfdefeat" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认上报" v-close-popup @click="recordselfdefeat"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <!-- </div> -->
+
+            <!-- <div class="row justify-around q-my-md"> -->
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" :label="[[ today_sl ? '我点错了':'使用 S/L']]" color="warning" @click="save_slot">
+              </q-btn>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="我挂树了" color="warning" @click="suspendVisible = true"></q-btn>
+              <q-dialog full-width v-model="suspendVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">挂树留言</div>
+                  </q-card-section>
+
+                  <q-card-section>
+                    <div class="text-body1">你确定要挂树吗？</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(选填)" @keyup.enter="addsuspend" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认挂树" v-close-popup @click="addsuspend"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="代刀上报" color="secondary" @click="recordBehalfVisible = true"></q-btn>
+              <q-dialog full-width v-model="recordBehalfVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">上报伤害</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-toggle v-model="defeat" checked-icon="ion-md-checkmark" color="positive" label="是否击败了头目？"
+                      unchecked-icon="ion-md-close" />
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-select filled v-model="behalf" :options="members" option-value="qqid" option-label="nickname"
+                      emit-value map-options>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-person-add"></q-icon>
+                      </template>
+                    </q-select>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input :disable="defeat" filled v-model.number="damage" label="伤害值" @keyup.enter="recorddamage">
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(选填)" @keyup.enter="recorddamage" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认上报" v-close-popup @click="recorddamage"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <!-- </div> -->
+
+            <!-- <div class="row justify-around q-my-md"> -->
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width"
+                :label="[[ (bossData.challenger)&&(bossData.challenger!=self_id) ? '强制解锁' : '解锁头目' ]]"
+                :color="(bossData.challenger)&&(bossData.challenger!=self_id) ? 'negative' : 'warning'"
+                @click="cancelapply"></q-btn>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="预约头目" color="primary" @click="subscribeFormVisible = true"></q-btn>
+              <q-dialog full-width v-model="subscribeFormVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">要预约哪个头目？</div>
+                  </q-card-section>
+
+                  <q-card-section>
+                    <div class="row justify-around">
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="1" label="一王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="2" label="二王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="3" label="三王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="4" label="四王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="5" label="五王"></q-radio>
+                      </div>
+                    </div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(选填)" @keyup.enter="addsubscribe" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="不预约了" v-close-popup></q-btn>
+                    <q-btn flat label="我要预约" v-close-popup @click="addsubscribe"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="取消预约" color="dark" @click="subscribeCancelVisible = true"></q-btn>
+              <q-dialog full-width v-model="subscribeCancelVisible"
+                :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">要取消预约哪个头目？</div>
+                  </q-card-section>
+
+                  <q-card-section>
+                    <div class="row justify-around">
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="1" label="一王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="2" label="二王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="3" label="三王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="4" label="四王"></q-radio>
+                      </div>
+                      <div class="col-auto">
+                        <q-radio v-model="subscribe" val="5" label="五王"></q-radio>
+                      </div>
+                    </div>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="不取消了" v-close-popup></q-btn>
+                    <q-btn flat label="我要取消" v-close-popup @click="cancelsubscribe"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <!-- </div> -->
+
+            <!-- <div class="row justify-around q-my-md"> -->
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="锁定头目" color="negative" @click="lockBossVisible = true"></q-btn>
+              <q-dialog full-width v-model="lockBossVisible" :position="$q.platform.is.mobile?'bottom':'standard'">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">锁定留言</div>
+                  </q-card-section>
+
+                  <q-card-section>
+                    <div class="text-body1">准备出刀请点击"申请出刀"，非管理需要请勿随意锁定。</div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-none">
+                    <q-input filled v-model="message" label="留言(必填)" @keyup.enter="challengeapply(2)" clearable>
+                      <template v-slot:prepend>
+                        <q-icon name="ion-chatbubbles"></q-icon>
+                      </template>
+                    </q-input>
+                  </q-card-section>
+
+                  <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="取消" v-close-popup></q-btn>
+                    <q-btn flat label="确认锁定" v-close-popup @click="challengeapply(2)"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="撤销上报" color="negative" @click="recordundo"></q-btn>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2 q-pa-xs">
+              <q-btn class="full-width" label="取消挂树" color="negative" @click="cancelsuspend"></q-btn>
+            </div>
+          </div>
+          {%- else -%}
+          <div class="row justify-center q-my-md">
+            <div class="col-auto">
+              <q-banner inline-actions class="text-white bg-red">
+                非公会战成员只允许查看
+              </q-banner>
+            </div>
+          </div>
+          {%- endif %}
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+    </q-layout>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+<script>
+  window.quasarConfig = {
+    notify: {
+      type: 'info',
+      position: 'top-right',
+      progress: true,
+      timeout: 1500,
+      closeBtn: 'x'
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>var csrf_token = "{{ session['csrf_token'] }}";</script>
+<script src="{{ url_for('yobot_static', filename='clan/panel.js') }}"></script>
+
+</html>
