@@ -2,6 +2,8 @@
 
 本项目使用[Quasar](https://quasar.dev/)对yobot的web管理界面进行调整，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
 
+ps.管理页和统计页未做，随缘更新。
+
 ## 使用方式
 
 ### Linux
@@ -13,6 +15,16 @@ cd yobot-quasar
 chmod +x install.sh
 ./install.sh
 ```
+
+### Windows
+
+1. clone本项目或下载zip到本地并解压。
+2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
+3. 将项目目录中的`static`和`template`两个文件夹移动到`yobot/src/client/public/`中(就是之前那两个文件夹在的地方)。
+
+## 恢复
+
+如果你严格按照说明进行操作，只需删除`yobot/src/client/public`目录下的`static`和`template`文件夹，并将`backup`中的备份文件恢复至原位即可。
 
 ## 声明
 
