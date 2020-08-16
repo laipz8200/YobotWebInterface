@@ -54,7 +54,7 @@ chmod +x install.sh
 
 ### 关于访问卡顿
 
-访问卡顿可能是由于CDN访问缓慢导致的，通常不会遇到，如果是在访问不了建议有能力的手动更换CDN地址，或试试[YoCool](https://github.com/A-kirami/YoCool)。
+访问卡顿可能是由于CDN访问缓慢导致的，通常不会遇到，如果实在访问不了建议有能力的手动更换CDN地址，或试试[YoCool](https://github.com/A-kirami/YoCool)。
 
 ## 声明
 
