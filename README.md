@@ -1,5 +1,4 @@
-# yobot on quasar
-
+# YobotWebInterface
 本项目使用[Quasar](https://quasar.dev/)对yobot的web管理界面进行调整，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
 
 ps.管理页和统计页未做，随缘更新。
