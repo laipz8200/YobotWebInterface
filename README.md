@@ -1,8 +1,40 @@
-# yobot on quasar
+# YobotWebInterface 
 
 本项目使用[Quasar](https://quasar.dev/)对yobot的web管理界面进行调整，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
 
-ps.管理页和统计页未做，随缘更新。
+<details>
+<summary>目录</summary>
+
+- [YobotWebInterface](#yobotwebinterface)
+  - [最近更新](#最近更新)
+  - [使用方式](#使用方式)
+    - [Linux](#linux)
+    - [Windows](#windows)
+  - [恢复](#恢复)
+  - [补充](#补充)
+    - [关于修改状态](#关于修改状态)
+    - [关于Dialog](#关于dialog)
+    - [关于表格](#关于表格)
+    - [关于缩放](#关于缩放)
+    - [关于自定义](#关于自定义)
+    - [关于访问卡顿](#关于访问卡顿)
+  - [声明](#声明)
+  - [致谢](#致谢)
+  - [交流](#交流)
+
+</details>
+
+---------
+
+## 最近更新
+
+- 更新了公会管理和成员管理页面
+
+![group-manager](https://ihs.arcadia.cool/laipz8200/dWulAj.png?x-oss-process=style/zip)
+
+- 更新了对linux用户更加友好的安装脚本
+
+![shell](https://ihs.arcadia.cool/laipz8200/Screen%20Shot%202020-08-21%20at%2011.28.57%20PM.png?x-oss-process=style/zip)
 
 ## 使用方式
 
@@ -18,11 +50,15 @@ chmod +x install.sh
 
 ### Windows
 
+欢迎熟悉powershell或cmd的大佬贡献脚本，我在PR等你！
+
 1. clone本项目或下载zip到本地并解压。
 2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
 3. 将项目目录中的`static`和`template`两个文件夹移动到`yobot/src/client/public/`中(就是之前那两个文件夹在的地方)。
 
 ## 恢复
+
+(2020/08/21) Linux系统现在可以通过再次运行安装脚本一键恢复了。
 
 如果你严格按照说明进行操作，只需删除`yobot/src/client/public`目录下的`static`和`template`文件夹，并将`backup`中的备份文件恢复至原位即可。
 
