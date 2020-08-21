@@ -171,9 +171,8 @@
           <!-- 表格 -->
           <div class="row jusitfy-center items-center q-my-md">
             <div class="col">
-              <q-table :data="progressData" :columns="columns" row-key="qqid" selection="multiple"
-                hide-no-data hide-pagination hide-selected-banner :pagination="{rowsPerPage: 0}"
-                :selected.sync="selected">
+              <q-table :data="progressData" :columns="columns" selection="multiple" hide-no-data hide-pagination
+                hide-selected-banner :pagination="{rowsPerPage: 0}" :selected.sync="selected" row-key="qqid">
                 <template v-slot:body="props">
                   <q-tr :props="props">
                     <q-td>
@@ -187,9 +186,10 @@
                     <q-td key="nickname" :props="props" @click="props.expand = !props.expand">
                       <span :class="props.row.sl === today ? 'text-negative' : ''">
                         [[ props.row.nickname ]]
-                    </span>
+                      </span>
                     </q-td>
-                    <q-td :class="cellColor(props.row.finished)" key="progress" :props="props" auto-width @click="props.expand = !props.expand">
+                    <q-td :class="cellColor(props.row.finished)" key="progress" :props="props" auto-width
+                      @click="props.expand = !props.expand">
                       [[ props.row.finished ]]
                     </q-td>
                     <q-td key="details" :props="props" auto-width>

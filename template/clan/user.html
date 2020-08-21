@@ -76,17 +76,18 @@
           <div class="row jusitfy-center items-center q-my-md">
             <div class="col">
               <!-- 表格 -->
-              <q-table :data="challengeData" :columns="columns" row-key="pcrdate" hide-no-data
-                hide-pagination hide-selected-banner :pagination="{rowsPerPage: 0}">
+              <q-table :data="challengeData" :columns="columns" row-key="pcrdate" hide-no-data hide-pagination
+                hide-selected-banner :pagination="{rowsPerPage: 0}">
                 <template v-slot:body="props">
                   <q-tr :props="props">
                     <q-td key="time" :props="props" @click="props.expand = !props.expand">
                       [[ props.row.pcrdate ]]
                     </q-td>
-                    <q-td key="progress" :props="props" @click="props.expand = !props.expand">
+                    <q-td key="damage" :props="props" @click="props.expand = !props.expand">
                       [[ totalDamage(props.row.detail) ]]
                     </q-td>
-                    <q-td :class="cellColor(props.row.finished)" key="progress" :props="props" @click="props.expand = !props.expand" auto-width>
+                    <q-td :class="cellColor(props.row.finished)" key="progress" :props="props"
+                      @click="props.expand = !props.expand" auto-width>
                       [[ props.row.finished ]]
                     </q-td>
                     <q-td key="details" :props="props" auto-width>

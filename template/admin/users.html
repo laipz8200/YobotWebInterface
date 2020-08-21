@@ -1,79 +1,161 @@
 <!DOCTYPE html>
+<html lang="zh">
 
 <head>
-    <title>yobot用户管理</title>
-    <meta name='viewport' content='width=1000' charset="utf-8" />
-    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.0/index.js"></script>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.0/theme-chalk/index.css">
-    <style>
-        [icon="el-icon-delete"]{
-            color: red;
-        }
-    </style>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=yes" />
+  <link rel="shortcut icon" href="{{ url_for('yobot_static', filename='icon.png') }}" type="image/x-icon">
+  <meta name='viewport' content='width=device-width, initial-scale=1' charset="utf-8" />
+  <title>用户管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/ionicons@^4.0.0/dist/css/ionicons.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.min.css" rel="stylesheet" type="text/css">
+  <style>
+    input {
+      font-size: 16px;
+    }
+
+    #q-app {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+
+    #q-app {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #q-app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+  </style>
 </head>
+<script>
+  var bg_url = "{{ url_for('yobot_static', filename='bg.jpeg') }}"
+</script>
 
 <body>
-    <div id="app">
-        <el-page-header @back="location='..'" content="yobot用户管理"></el-page-header>
-        <br>
-        <el-form :inline="true" :model="query_input">
-            <el-form-item label="QQ号">
-                <el-input v-model="query_input.qqid" placeholder="QQ号"></el-input>
-            </el-form-item>
-            <el-form-item label="公会战群号">
-                <el-input v-model="query_input.clan_group_id" placeholder="公会战群号"></el-input>
-            </el-form-item>
-            <el-form-item label="用户组">
-                <el-select v-model="query_input.authority_group" placeholder="用户组">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option label="主人" value="1"></el-option>
-                    <el-option label="公会战管理员" value="10"></el-option>
-                    <el-option label="成员" value="100"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="search" icon="el-icon-search">搜索</el-button>
-            </el-form-item>
-        </el-form>
-        <el-table :data="userData" style="width: 100%" v-loading="isLoading" stripe>
-            <el-table-column label="详情页" width="30">
-                <template slot-scope="scope">
-                    <a :href="'../../user/' + scope.row.qqid + '/'"><i class="el-icon-user"></i></a>
+  <div id="q-app" :style="'background-image: url(' + bg_url + ')'">
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_user') }}" flat round dense icon="ion-undo" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title stretch flat>用户管理</q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+
+      <q-page-container>
+        <q-page padding>
+          <!-- 筛选 -->
+          <q-form @submit="search">
+            <div class="row q-my-md">
+              <div class="col-xs-6 col-md-3 q-pa-xs">
+                <q-input :dense="$q.platform.is.mobile" filled v-model="query_input.qqid" label="QQ号" @keyup.enter="search" clearable>
+                  <template v-slot:prepend>
+                    <q-icon name="ion-ios-contact"></q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-xs-6 col-md-3 q-pa-xs">
+                <q-input :dense="$q.platform.is.mobile" filled v-model="query_input.clan_group_id" label="群号" @keyup.enter="search" clearable>
+                  <template v-slot:prepend>
+                    <q-icon name="ion-ios-contacts"></q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-xs-6 col-md-3 q-pa-xs">
+                <q-select :dense="$q.platform.is.mobile" filled v-model="query_input.authority_group" label="用户组" :options="options" map-options emit-value>
+                  <template v-slot:prepend>
+                    <q-icon name="ion-logo-buffer"></q-icon>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-6 col-md-3 q-pa-xs">
+                <q-btn :size="$q.platform.is.mobile ? 'md' : 'lg'" class="full-width" color="primary" icon="ion-ios-search" label="搜索" type="submit">
+                </q-btn>
+              </div>
+            </div>
+          </q-form>
+          <!-- 表格 -->
+          <div class="row jusitfy-center items-center q-my-md">
+            <div class="col">
+              <q-table :data="userData" :columns="columns" hide-bottom :pagination="{rowsPerPage: 0}" row-key="qqid">
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="avatar" :props="props" @click="location='../../user/'+props.row.qqid+'/'">
+                      <q-avatar size="2rem">
+                        <img :src="'https://q1.qlogo.cn/g?b=qq&nk=' + props.row.qqid + '&s=640'">
+                      </q-avatar>
+                    </q-td>
+                    <q-td key="nickname" :props="props">[[ props.row.nickname ]]</q-td>
+                    <q-td key="qqid" :props="props">[[ props.row.qqid ]]</q-td>
+                    <q-td key="group_id" :props="props">[[ props.row.clan_group_id ]]</q-td>
+                    <q-td key="groups" :props="props">
+                      <q-select dense filled v-model="props.row.authority_group" :options="authtype" map-options
+                        emit-value @input="modify(props)"></q-select>
+                    </q-td>
+                    <q-td key="last_seen" :props="props">[[ datestr(props.row.last_login_time) ]]</q-td>
+                    <q-td key="ip" :props="props">[[ props.row.last_login_ipaddr ]]</q-td>
+                    <q-td key="delete" :props="props" auto-width>
+                      <q-btn rounded flat icon="ion-trash" @click="delete_user(props)"></q-btn>
+                    </q-td>
+                  </q-tr>
                 </template>
-            </el-table-column>
-            <el-table-column prop="nickname" label="昵称" width="200" sortable></el-table-column>
-            <el-table-column prop="qqid" label="QQ号" width="120" sortable></el-table-column>
-            <el-table-column prop="clan_group_id" label="公会战群号" width="120" sortable></el-table-column>
-            <el-table-column prop="authority_group" label="用户组" width="150" sortable>
-                <template slot-scope="scope">
-                    <el-select v-model="scope.row.authority_group" @change="modify(scope)" size="mini">
-                        <el-option v-for="item in authtype" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                    </el-select>
-                </template>
-            </el-table-column>
-            <el-table-column prop="last_login_time" label="上次登录时间" width="200" sortable>
-                <template slot-scope="scope">
-                    [[ datestr(scope.row.last_login_time) ]]
-                </template>
-            </el-table-column>
-            <el-table-column prop="last_login_ipaddr" label="上次登录IP地址" width="150"></el-table-column>
-            <el-table-column label="删除" width="30">
-                <template slot-scope="scope">
-                        <el-button type="text" @click="delete_user(scope)" icon="el-icon-delete"></el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-button v-if="has_more" icon="el-icon-arrow-down" :loading="moreLoading" @click="load_more">加载更多</el-button>
-        <el-button v-else icon="el-icon-arrow-down" disabled>已加载全部</el-button>
-        <el-backtop></el-backtop>
-    </div>
+              </q-table>
+            </div>
+          </div>
+        </q-page>
+      </q-page-container>
+
+      <q-footer class="bg-primary shadow-2">
+        <q-toolbar>
+          <q-btn type="a" href="{{ url_for('yobot_homepage') }}" flat round dense icon="ion-home" class="q-mr-sm">
+          </q-btn>
+          <q-separator dark vertical inset></q-separator>
+          <q-toolbar-title>Powered by yobot</q-toolbar-title>
+          <q-btn type="a" href="https://github.com/pcrbot/yobot" stretch flat icon="ion-logo-github"></q-btn>
+        </q-toolbar>
+      </q-footer>
+
+    </q-layout>
+  </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
 <script>
-    var api_path = "{{ url_for('yobot_users_api') }}";
-    var csrf_token = "{{ session['csrf_token'] }}";
+  window.quasarConfig = {
+    notify: {
+      type: 'info',
+      position: 'top-right',
+      progress: true,
+      timeout: 1500,
+      closeBtn: 'x'
+    }
+  }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/quasar.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/lang/zh-hans.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.12.13/dist/icon-set/ionicons-v4.umd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="{{ url_for('yobot_static', filename='js/banZoom.js') }}"></script>
+<script>
+  Quasar.iconSet.set(Quasar.iconSet.ioniconsV4)
+</script>
+<script>
+
+  var api_path = "{{ url_for('yobot_users_api') }}";
+  var csrf_token = "{{ session['csrf_token'] }}";</script>
 <script src="{{ url_for('yobot_static', filename='admin/users.js') }}"></script>
 
 </html>

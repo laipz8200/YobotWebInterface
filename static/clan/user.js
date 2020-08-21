@@ -1,12 +1,15 @@
 var gs_offset = { jp: 4, tw: 5, kr: 4, cn: 5 };
+
 function pad2(num) {
   return String(num).padStart(2, '0');
 }
+
 function ts2ds(timestamp) {
   var d = new Date();
   d.setTime(timestamp * 1000);
   return d.getFullYear() + '/' + pad2(d.getMonth() + 1) + '/' + pad2(d.getDate());
 }
+
 var vm = new Vue({
   el: '#q-app',
   data: {
@@ -19,7 +22,7 @@ var vm = new Vue({
       { name: 'time', label: '出刀日期', field: 'pcrdate', align: 'center', sortable: true },
       { name: 'damage', label: '造成伤害', field: 'detail', align: 'center', sortable: true },
       { name: 'progress', label: '出刀数', field: 'finished', format: val => `${val}`, align: 'center', sortable: true },
-      { name: 'details', label: '详细信息', style: 'max-width: 1rem', align: 'center' },
+      { name: 'details', label: '详细', align: 'center' },
     ],
   },
   mounted() {
@@ -118,16 +121,6 @@ var vm = new Vue({
       if (m.pcrdate != -1) {
         thisvue.challengeData.push(m);
       }
-    },
-    viewInExcel: function () {
-      var icons = document.getElementsByTagName('span');
-      while (icons[0]) {
-        icons[0].remove();
-      }
-      var uri = 'data:application/vnd.ms-excel;base64,';
-      var ctx = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>' + document.getElementsByTagName('thead')[0].innerHTML + document.getElementsByTagName('tbody')[0].innerHTML + '</table></body></html>';
-      window.location.href = uri + window.btoa(unescape(encodeURIComponent(ctx)));
-      document.documentElement.innerHTML = '请在Excel中查看（如果无法打开，请安装最新版本Excel）\n或者将整个表格复制，粘贴到Excel中使用';
     },
     handleSelect(key, keyPath) {
       switch (key) {
