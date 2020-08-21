@@ -272,8 +272,8 @@
                   </q-card-section>
 
                   <q-card-section class="q-pt-none">
-                    <q-select filled v-model="behalf" :options="members" option-value="qqid" option-label="nickname"
-                      emit-value map-options>
+                    <q-select filled v-model="behalf" label="出刀成员" :options="members" option-value="qqid"
+                      option-label="nickname" emit-value map-options>
                       <template v-slot:prepend>
                         <q-icon name="ion-person-add"></q-icon>
                       </template>

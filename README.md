@@ -42,8 +42,8 @@
 
 确认你安装了并且能够正常使用`Git`，在yobot根目录下运行
 ```shell
-git clone https://github.com/laipz8200/yobot-quasar.git
-cd yobot-quasar
+git clone https://github.com/laipz8200/YobotWebInterface.git
+cd YobotWebInterface
 chmod +x install.sh
 ./install.sh
 ```
