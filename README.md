@@ -74,9 +74,9 @@ chmod +x install.sh
 
 ## 恢复
 
-(2020/08/21) Linux系统现在可以通过再次运行安装脚本一键恢复了。
+如果你使用脚本安装，只要再次运行脚本并按提示操作即可更新或恢复。
 
-如果你严格按照说明进行操作，只需删除`yobot/src/client/public`目录下的`static`和`template`文件夹，并将`backup`中的备份文件恢复至原位即可。
+如果你是手动安装，在严格按照说明进行操作的前提下，只需删除`yobot/src/client/public`目录下的`static`和`template`文件夹，并将`backup`中的备份文件恢复至原位即可。
 
 ## 补充
 
