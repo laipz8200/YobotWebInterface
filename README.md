@@ -63,8 +63,34 @@ chmod +x install.sh
 #### 一键安装
 
 1. 下载本项目下的Powershell一键安装脚本`WebUIOneKeyScript.ps1`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
-2. 将脚本放置在**和yobot安装目录同级的位置**，如果是hoshino插件版，该位置为第一层yobot目录。
+2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的位置说明。
 3. 在Powershell中运行脚本。
+
+##### 脚本位置说明
+
+```shell
+# yobot源码版
+
+.
+├── WebUIOneKeyScript.ps1      <-------这里
+└── yobot
+    ├── docs
+    ├── documents
+    ├── src
+    ├── ...
+    └── README.md
+
+# yobot插件版
+
+modules
+├── botmanage
+├── deepchat
+├── ...
+└── yobot
+    ├── WebUIOneKeyScript.ps1  <-------这里
+    └── yobot
+
+```
 
 #### 手动安装
 
