@@ -6,10 +6,12 @@
 <summary>目录</summary>
 
 - [YobotWebInterface](#yobotwebinterface)
-  - [最近更新](#最近更新)
+    - [最近更新](#最近更新)
   - [使用方式](#使用方式)
     - [Linux](#linux)
     - [Windows](#windows)
+      - [一键安装](#一键安装)
+      - [手动安装](#手动安装)
   - [恢复](#恢复)
   - [补充](#补充)
     - [关于修改状态](#关于修改状态)
@@ -24,9 +26,14 @@
 
 </details>
 
----------
+### 最近更新
 
-## 最近更新
+2020/8/25: 添加Windows一键安装脚本
+
+<details>
+<summary>历史更新</summary>
+
+2020/8/21
 
 - 更新了公会管理和成员管理页面
 
@@ -35,6 +42,9 @@
 - 更新了对linux用户更加友好的安装脚本
 
 ![shell](https://ihs.arcadia.cool/laipz8200/Screen%20Shot%202020-08-21%20at%2011.28.57%20PM.png?x-oss-process=style/zip)
+</details>
+
+-----
 
 ## 使用方式
 
@@ -50,7 +60,13 @@ chmod +x install.sh
 
 ### Windows
 
-欢迎熟悉powershell或cmd的大佬贡献脚本，我在PR等你！
+#### 一键安装
+
+1. 下载本项目下的Powershell一键安装脚本`WebUIOneKeyScript.ps1`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
+2. 将脚本放置在**和yobot安装目录同级的位置**，如果是hoshino插件版，该位置为第一层yobot目录。
+3. 在Powershell中运行脚本。
+
+#### 手动安装
 
 1. clone本项目或下载zip到本地并解压。
 2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
@@ -103,6 +119,8 @@ chmod +x install.sh
 感谢[pcrbot/yobot](https://github.com/pcrbot/yobot)提供了项目的基础。
 
 感谢[A-kirami/YoCool](https://github.com/A-kirami/YoCool)提供了查刀页面的布局参考，[YoCool](https://github.com/A-kirami/YoCool)是一个美观、可爱、精致的Yobot后台主题，欢迎尝试。
+
+感谢[@corvo007](https://github.com/corvo007)提供的Windows一键安装脚本。
 
 ## 交流
 

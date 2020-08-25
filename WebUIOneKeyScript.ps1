@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference = "inquire"
 
 Write-Output "
-注意：执行操作前请确认本脚本与内层yobot目录(插件版)/yobot目录(源码版)位于同级目录！
+注意：执行操作前请确认本脚本与[插件版]yobot**内层**目录或[源码版]yobot目录位于同级目录！
 
 本脚本当前执行位置：$PSScriptRoot
 ===============命令菜单==================
