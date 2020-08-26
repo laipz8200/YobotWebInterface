@@ -1,6 +1,6 @@
 workdir=$(pwd)
 target_dir="YobotWebInterface"
-rc2_file="user-info-rc2.html"
+rc2_file="yobot/src/client/public/template/user-info-rc2.html"
 backup_dir="yobot/src/client/public/backup"
 yobot_dir="yobot/src"
 
@@ -100,10 +100,10 @@ elif [ $select == "3" ]; then
     delete_file
     install_file
     if [ -a $rc2_file ]; then
+        echo "检测到你安装的是yobot[v3.6.4-rc.1]版本"
+    else
         echo "检测到你安装的是yobot[v3.6.4-rc.2]版本"
         replace_for_rc2
-    else
-        echo "检测到你安装的是yobot[v3.6.4-rc.1]版本"
     fi
     echo "更新完成"
 elif [ $select == "4" ]; then
