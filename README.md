@@ -62,9 +62,8 @@
 
 #### Linux
 
-1. Linux用户下载本项目下的Shell一键安装脚本`WebUIOneKeyScript.sh`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
-2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的[脚本位置说明](#脚本位置说明)。
-3. 在终端中执行 `chmod u+x WebUIOneKeyScript.sh && ./WebUIOneKeyScript.sh`
+1. 进入与yobot的上级目录(即可以通过`ls`命令看到yobot目录的位置)，如果你不知道我说的是哪里，请参考下方的[位置说明](#脚本位置说明)，进入与标记脚本相同的目录即可。
+2. 运行 `bash <(curl -s -L https://github.com/laipz8200/YobotWebInterface/releases/download/v1.0/WebUIOneKeyScript.sh)`
 
 #### Windows
 
@@ -80,7 +79,7 @@
 # yobot源码版
 
 .
-├── WebUIOneKeyScript          <-------这里
+├── WebUIOneKeyScript.ps1          <-------这里
 └── yobot
     ├── docs
     ├── documents
@@ -95,7 +94,7 @@ modules
 ├── deepchat
 ├── ...
 └── yobot
-    ├── WebUIOneKeyScript      <-------这里
+    ├── WebUIOneKeyScript.ps1      <-------这里
     └── yobot
 
 # 各个魔改版一键包请自行判断位置
