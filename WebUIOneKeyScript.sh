@@ -91,21 +91,26 @@ elif [ $select == "2" ]; then
     echo "安装完成"
 elif [ $select == "3" ]; then
     if [ -d $target_dir ]; then
-        update_from_github
+        if [ -a $rc2_file ]; then
+            echo "检测到你安装的是yobot[v3.6.4-rc.1]版本"
+            update_from_github
+            echo "开始执行更新"
+            delete_file
+            install_file
+            echo "更新完成"
+        else
+            echo "检测到你安装的是yobot[v3.6.4-rc.2]版本"
+            update_from_github
+            echo "开始执行更新"
+            delete_file
+            install_file
+            replace_for_rc2
+            echo "更新完成"
+        fi
     else
         echo "没有找到项目目录，请确认脚本运行位置无误"
         exit 1
     fi
-    echo "开始执行更新"
-    delete_file
-    install_file
-    if [ -a $rc2_file ]; then
-        echo "检测到你安装的是yobot[v3.6.4-rc.1]版本"
-    else
-        echo "检测到你安装的是yobot[v3.6.4-rc.2]版本"
-        replace_for_rc2
-    fi
-    echo "更新完成"
 elif [ $select == "4" ]; then
     if [ ! -d $backup_dir ]; then
         echo "未找到备份目录，无法执行卸载操作"
