@@ -171,8 +171,9 @@
           <!-- 表格 -->
           <div class="row jusitfy-center items-center q-my-md">
             <div class="col">
-              <q-table :data="progressData" :columns="columns" selection="multiple" hide-no-data hide-pagination
-                hide-selected-banner :pagination="{rowsPerPage: 0}" :selected.sync="selected" row-key="qqid">
+              <q-table :data="progressData" :columns="$q.platform.is.desktop ? columns_desktop : columns" selection="multiple" hide-no-data hide-pagination
+                :sort-method="customSort" hide-selected-banner :pagination="{rowsPerPage: 0}" :selected.sync="selected"
+                row-key="qqid">
                 <template v-slot:body="props">
                   <q-tr :props="props">
                     <q-td>
@@ -188,9 +189,39 @@
                         [[ props.row.nickname ]]
                       </span>
                     </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="first" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[0]">
+                        <span v-if="props.row.detail[1]">[[ props.row.detail[0].damage + props.row.detail[1].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[0].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
+                    </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="second" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[2]">
+                        <span v-if="props.row.detail[3]">[[ props.row.detail[2].damage + props.row.detail[3].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[2].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
+                    </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="third" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[4]">
+                        <span v-if="props.row.detail[5]">[[ props.row.detail[4].damage + props.row.detail[5].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[4].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
+                    </q-td>
                     <q-td :class="cellColor(props.row.finished)" key="progress" :props="props" auto-width
                       @click="props.expand = !props.expand">
                       [[ props.row.finished ]]
+                    </q-td>
+                    <q-td key="damage" :props="props" @click="props.expand = !props.expand">
+                      [[ totalDamage(props.row.detail) ]]
                     </q-td>
                     <q-td key="details" :props="props" auto-width>
                       <q-btn size="sm" flat round @click="props.expand = !props.expand"

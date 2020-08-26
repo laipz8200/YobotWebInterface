@@ -76,12 +76,39 @@
           <div class="row jusitfy-center items-center q-my-md">
             <div class="col">
               <!-- 表格 -->
-              <q-table :data="challengeData" :columns="columns" row-key="pcrdate" hide-no-data hide-pagination
-                hide-selected-banner :pagination="{rowsPerPage: 0}">
+              <q-table :data="challengeData" :columns="$q.platform.is.desktop ? columns_desktop : columns" row-key="pcrdate" hide-no-data hide-pagination
+                hide-selected-banner :pagination="{rowsPerPage: 0}" :sort-method="customSort">
                 <template v-slot:body="props">
                   <q-tr :props="props">
                     <q-td key="time" :props="props" @click="props.expand = !props.expand">
                       [[ props.row.pcrdate ]]
+                    </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="first" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[0]">
+                        <span v-if="props.row.detail[1]">[[ props.row.detail[0].damage + props.row.detail[1].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[0].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
+                    </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="second" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[2]">
+                        <span v-if="props.row.detail[3]">[[ props.row.detail[2].damage + props.row.detail[3].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[2].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
+                    </q-td>
+                    <q-td v-if="$q.platform.is.desktop" key="third" :props="props"
+                      @click="props.expand = !props.expand">
+                      <span v-if="props.row.detail[4]">
+                        <span v-if="props.row.detail[5]">[[ props.row.detail[4].damage + props.row.detail[5].damage
+                          ]]</span>
+                        <span v-else>[[ props.row.detail[4].damage ]]</span>
+                      </span>
+                      <span v-else>尚未出刀</span>
                     </q-td>
                     <q-td key="damage" :props="props" @click="props.expand = !props.expand">
                       [[ totalDamage(props.row.detail) ]]

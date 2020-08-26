@@ -29,15 +29,26 @@
 
 ### 最近更新
 
+2020/8/27
+
+- 对`查刀`和`记录`页面的表格进行优化，具体改变如下：
+  - 移动端`查刀`表格新增显示成员当日总伤害。![mobile_damage](https://ihs.arcadia.cool/laipz8200/H86Y0V.png?x-oss-process=style/zip)
+  - 桌面端`查刀`表格新增`第一刀`、`第二刀`、`第三刀`、`造成伤害`四列，其中尾刀和补时刀伤害算为一刀，可在详情部分分别查看。![desktop_progress](https://ihs.arcadia.cool/laipz8200/eF670A.png?x-oss-process=style/zip)
+  - 桌面端`记录`表格新增`第一刀`、`第二刀`、`第三刀`。![desktop_user](https://ihs.arcadia.cool/laipz8200/l5Fz5C.png?x-oss-process=style/zip)
+  - 以上所有新增列均支持排序。
+
+> 使用一键脚本安装的用户可以直接使用脚本的`更新`功能进行更新。
+
+
+<details>
+<summary>历史更新</summary>
+
 2020/8/26
 
 - 添加对yobot\[v3.6.4-rc.2\]版本的支持
 - 添加了Linux一键安装脚本
 
 ![linux_script](https://ihs.arcadia.cool/laipz8200/JwbWar.png?x-oss-process=style/zip)
-
-<details>
-<summary>历史更新</summary>
 
 2020/8/25
 
@@ -63,7 +74,13 @@
 #### Linux
 
 1. 进入与yobot的上级目录(即可以通过`ls`命令看到yobot目录的位置)，如果你不知道我说的是哪里，请参考下方的[位置说明](#脚本位置说明)，进入与标记脚本相同的目录即可。
-2. 运行 `bash <(curl -s -L https://github.com/laipz8200/YobotWebInterface/releases/download/v1.0/WebUIOneKeyScript.sh)`
+2. 运行以下命令
+
+    ```shell
+    bash <(curl -s -L https://github.com/laipz8200/YobotWebInterface/releases/download/v1.0/WebUIOneKeyScript.sh)
+    ```
+
+3. 你也可以在[发布页](https://github.com/laipz8200/YobotWebInterface/releases)手动下载脚本并安装。
 
 #### Windows
 

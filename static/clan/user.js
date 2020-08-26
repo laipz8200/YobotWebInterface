@@ -18,8 +18,17 @@ var vm = new Vue({
     activeIndex: '5',
     qqid: 0,
     nickname: '',
+    columns_desktop: [
+      { name: 'time', label: '出刀日期', field: 'pcrdate', align: 'center' },
+      { name: 'first', label: '第一刀', field: 'detail', align: 'center', sortable: true },
+      { name: 'second', label: '第二刀', field: 'detail', align: 'center', sortable: true },
+      { name: 'third', label: '第三刀', field: 'detail', align: 'center', sortable: true },
+      { name: 'damage', label: '造成伤害', field: 'detail', align: 'center', sortable: true },
+      { name: 'progress', label: '出刀数', field: 'finished', format: val => `${val}`, align: 'center', sortable: true },
+      { name: 'details', label: '详细', align: 'center' },
+    ],
     columns: [
-      { name: 'time', label: '出刀日期', field: 'pcrdate', align: 'center', sortable: true },
+      { name: 'time', label: '出刀日期', field: 'pcrdate', align: 'center' },
       { name: 'damage', label: '造成伤害', field: 'detail', align: 'center', sortable: true },
       { name: 'progress', label: '出刀数', field: 'finished', format: val => `${val}`, align: 'center', sortable: true },
       { name: 'details', label: '详细', align: 'center' },
@@ -46,14 +55,55 @@ var vm = new Vue({
     });
   },
   methods: {
-    totalDamage (data) {
+    calc_damage(data, num) {
+      if (data[num]) {
+        if (data[num + 1]) {
+          return data[num].damage + data[num + 1].damage
+        }
+        else {
+          return data[num].damage
+        }
+      }
+      else {
+        return 0
+      }
+    },
+    customSort(rows, sortBy, descending) {
+      const data = [...rows]
+
+      if (sortBy) {
+        data.sort((a, b) => {
+          const x = descending ? b : a
+          const y = descending ? a : b
+
+          if (sortBy === 'damage') {
+            return this.totalDamage(x.detail) - this.totalDamage(y.detail)
+          }
+          else if (sortBy === 'first') {
+            return this.calc_damage(x.detail, 0) - this.calc_damage(y.detail, 0)
+          }
+          else if (sortBy === 'second') {
+            return this.calc_damage(x.detail, 2) - this.calc_damage(y.detail, 2)
+          }
+          else if (sortBy === 'third') {
+            return this.calc_damage(x.detail, 4) - this.calc_damage(y.detail, 4)
+          }
+          else {
+            // numeric sort
+            return parseFloat(x[sortBy]) - parseFloat(y[sortBy])
+          }
+        })
+      }
+      return data
+    },
+    totalDamage(data) {
       var damage = 0;
       data.forEach(item => {
         damage += item.damage;
       })
       return damage
     },
-    cellColor (val) {
+    cellColor(val) {
       if (val === 3) { return 'bg-green-2' }
       return 'bg-red-2'
     },
