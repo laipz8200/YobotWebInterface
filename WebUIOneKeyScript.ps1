@@ -5,9 +5,10 @@ Write-Output "
 
 本脚本当前执行位置：$PSScriptRoot
 ===============命令菜单==================
-1.全新安装
-2.卸载并恢复
-3.更新
+1.为yobot[v3.6.4-rc.1]安装
+2.为yobot[v3.6.4-rc.2]安装
+3.卸载并恢复
+4.更新
 警告：若之前没有通过本脚本安装，请勿执行卸载命令！
 ========================================"
 
@@ -40,6 +41,30 @@ switch ($choice)
         exit
     }
     2 
+    { 
+        if (Test-Path .\YobotWebInterface)
+        {
+            Write-Output "已经有本项目文件夹了，建议去更新"
+            break
+        }
+        git clone https://github.com/laipz8200/YobotWebInterface.git
+        if (!$?) 
+        {
+            Write-Output "你没装git！/ 你网络不好！"
+            break
+        }
+        New-Item .\yobot\src\client\public\backup -ItemType Directory
+        Copy-Item .\yobot\src\client\public\static .\yobot\src\client\public\backup -Recurse -Force
+        Copy-Item .\yobot\src\client\public\template .\yobot\src\client\public\backup -Recurse -Force
+        Remove-Item .\yobot\src\client\public\static -Force -Recurse
+        Remove-Item .\yobot\src\client\public\template -Force -Recurse
+        Copy-Item  .\YobotWebInterface\static .\yobot\src\client\public
+        Copy-Item  .\YobotWebInterface\template .\yobot\src\client\public
+        Copy-Item .\yobot\src\client\public\template\user-info-rc2.html .\yobot\src\client\public\template\user-info.html -Force
+        Write-Output "安装完成！"
+        exit
+    }
+    3 
     {
         Remove-Item .\yobot\src\client\public\static -Force -Recurse
         Remove-Item .\yobot\src\client\public\template -Force -Recurse
@@ -49,7 +74,7 @@ switch ($choice)
         Write-Output "卸载完成！"
         exit
     } 
-    3 
+    4 
     { 
         if(Test-Path .\YobotWebInterface)
         {

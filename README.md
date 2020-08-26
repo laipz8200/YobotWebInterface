@@ -8,11 +8,12 @@
 - [YobotWebInterface](#yobotwebinterface)
     - [最近更新](#最近更新)
   - [使用方式](#使用方式)
-    - [Linux](#linux)
-    - [Windows](#windows)
-      - [一键安装](#一键安装)
-      - [手动安装](#手动安装)
-  - [恢复](#恢复)
+    - [一键安装](#一键安装)
+      - [Linux](#linux)
+      - [Windows](#windows)
+      - [脚本位置说明](#脚本位置说明)
+    - [手动安装](#手动安装)
+    - [更新和卸载](#更新和卸载)
   - [补充](#补充)
     - [关于修改状态](#关于修改状态)
     - [关于Dialog](#关于dialog)
@@ -28,10 +29,19 @@
 
 ### 最近更新
 
-2020/8/25: 添加Windows一键安装脚本
+2020/8/26
+
+- 添加对yobot\[v3.6.4-rc.2\]版本的支持
+- 添加了Linux一键安装脚本
+
+![linux_script](https://ihs.arcadia.cool/laipz8200/JwbWar.png?x-oss-process=style/zip)
 
 <details>
 <summary>历史更新</summary>
+
+2020/8/25
+
+- 添加Windows一键安装脚本
 
 2020/8/21
 
@@ -48,31 +58,29 @@
 
 ## 使用方式
 
-### Linux
+### 一键安装
 
-确认你安装了并且能够正常使用`Git`，在yobot根目录下运行
-```shell
-git clone https://github.com/laipz8200/YobotWebInterface.git
-cd YobotWebInterface
-chmod +x install.sh
-./install.sh
-```
+#### Linux
 
-### Windows
+1. Linux用户下载本项目下的Shell一键安装脚本`WebUIOneKeyScript.sh`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
+2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的[脚本位置说明](#脚本位置说明)。
+3. 在终端中执行 `chmod u+x WebUIOneKeyScript.sh && ./WebUIOneKeyScript.sh`
 
-#### 一键安装
+#### Windows
 
-1. 下载本项目下的Powershell一键安装脚本`WebUIOneKeyScript.ps1`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
-2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的位置说明。
+1. Windows用户下载本项目下的Powershell一键安装脚本`WebUIOneKeyScript.ps1`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
+2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的[脚本位置说明](#脚本位置说明)。
 3. 在Powershell中运行脚本。
 
-##### 脚本位置说明
+> 注意，Windows一键脚本暂不支持联网更新。
+
+#### 脚本位置说明
 
 ```shell
 # yobot源码版
 
 .
-├── WebUIOneKeyScript.ps1      <-------这里
+├── WebUIOneKeyScript          <-------这里
 └── yobot
     ├── docs
     ├── documents
@@ -80,27 +88,29 @@ chmod +x install.sh
     ├── ...
     └── README.md
 
-# yobot插件版
+# HoshinoBot + yobot插件版
 
 modules
 ├── botmanage
 ├── deepchat
 ├── ...
 └── yobot
-    ├── WebUIOneKeyScript.ps1  <-------这里
+    ├── WebUIOneKeyScript      <-------这里
     └── yobot
+
+# 各个魔改版一键包请自行判断位置
 
 ```
 
-#### 手动安装
+### 手动安装
 
 1. clone本项目或下载zip到本地并解压。
 2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
 3. 将项目目录中的`static`和`template`两个文件夹移动到`yobot/src/client/public/`中(就是之前那两个文件夹在的地方)。
 
-## 恢复
+### 更新和卸载
 
-如果你使用脚本安装，只要再次运行脚本并按提示操作即可更新或恢复。
+如果你使用脚本安装，只要再次运行脚本并按提示操作即可更新或卸载，卸载会将bot样式恢复到安装前。
 
 如果你是手动安装，在严格按照说明进行操作的前提下，只需删除`yobot/src/client/public`目录下的`static`和`template`文件夹，并将`backup`中的备份文件恢复至原位即可。
 
