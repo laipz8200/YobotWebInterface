@@ -1,42 +1,61 @@
 ﻿$ErrorActionPreference = "SilentlyContinue"
+function BackupFile{
+        Copy-Item .\yobot\src\client\public\static .\yobot\src\client\public\backup -Recurse -Force
+        Copy-Item .\yobot\src\client\public\template .\yobot\src\client\public\backup -Recurse -Force   
+}
 
+function RestoreFile{
+        Copy-Item  .\yobot\src\client\public\backup\static .\yobot\src\client\public -Force -Recurse
+        Copy-Item  .\yobot\src\client\public\backup\template .\yobot\src\client\public -Force -Recurse
+}
+
+function RemoveFile{
+        Remove-Item .\yobot\src\client\public\static\* -Force -Recurse
+        Remove-Item .\yobot\src\client\public\template\* -Force -Recurse
+}
+
+function InstallFile{
+        Copy-Item  .\YobotWebInterface\static .\yobot\src\client\public -Force -Recurse
+        Copy-Item  .\YobotWebInterface\template .\yobot\src\client\public -Force -Recurse
+}
 function Install {
-   git clone https://github.com/laipz8200/YobotWebInterface.git
+        New-Item .\yobot\src\client\public\backup -ItemType Directory
+        BackupFile
+        git clone https://github.com/laipz8200/YobotWebInterface.git
         if (!$?) 
         {
             Write-Output "你没装git！/ 你网络不好！"
             break
         }
-        New-Item .\yobot\src\client\public\backup -ItemType Directory
-        Copy-Item .\yobot\src\client\public\static .\yobot\src\client\public\backup -Recurse -Force
-        Copy-Item .\yobot\src\client\public\template .\yobot\src\client\public\backup -Recurse -Force
-        Remove-Item .\yobot\src\client\public\static -Force -Recurse
-        Remove-Item .\yobot\src\client\public\template -Force -Recurse
-        Copy-Item  .\YobotWebInterface\static .\yobot\src\client\public
-        Copy-Item  .\YobotWebInterface\template .\yobot\src\client\public
-        Write-Output "安装完成！"
+        RemoveFile
+        InstallFile
 }
 
 function Uninstall{
-        Remove-Item .\yobot\src\client\public\static -Force -Recurse
-        Remove-Item .\yobot\src\client\public\template -Force -Recurse
-        Copy-Item  .\yobot\src\client\public\backup\static .\yobot\src\client\public
-        Copy-Item  .\yobot\src\client\public\backup\template .\yobot\src\client\public
+    if (Test-Path .\yobot\src\client\public\backup){
+        RemoveFile
+        RestoreFile
         Remove-Item .\yobot\src\client\public\backup -Recurse -Force
+        Remove-Item .\YobotWebInterface -Recurse -Force
         Write-Output "卸载完成！"
+    }
+    else{
+        Write-Output "警告：未检测到备份目录，将中断程序执行。"
+        break
+    } 
 }
 
 function DetectVersion{
     if (Test-Path .\yobot\src\client\public\template\user-info-rc2.html){
-        $Version = "3.6.4-rc.2"
+        $Version = "Others" 
     }
     else {
-        $Version = "Others" 
+        $Version = "3.6.4-rc.2"
     }
 }
 
 function rename{
-    Rename-Item .\yobot\src\client\public\template\user-info-rc2.html .\yobot\src\client\public\template\user-info.html 
+    Rename-Item .\yobot\src\client\public\template\user-info-rc2.html .\yobot\src\client\public\template\user-info.html
 }
 
 function Update{
@@ -50,20 +69,15 @@ function Update{
             Set-Location ..\
             if(Test-Path .\yobot\src\client\public\backup)
             {
-                Remove-Item .\yobot\src\client\public\backup -Force -Recurse
-                New-Item .\yobot\src\client\public\backup -ItemType Directory
-                Copy-Item .\yobot\src\client\public\static .\yobot\src\client\public\backup -Recurse -Force
-                Copy-Item .\yobot\src\client\public\template .\yobot\src\client\public\backup -Recurse -Force
+                Remove-Item .\yobot\src\client\public\backup\* -Force -Recurse
+                BackupFile
             }
             else {
                 New-Item .\yobot\src\client\public\backup -ItemType Directory
-                Copy-Item .\yobot\src\client\public\static .\yobot\src\client\public\backup -Recurse -Force
-                Copy-Item .\yobot\src\client\public\template .\yobot\src\client\public\backup -Recurse -Force
+                BackupFile
             }
-            Remove-Item .\yobot\src\client\public\static -Force -Recurse
-            Remove-Item .\yobot\src\client\public\template -Force -Recurse
-            Copy-Item  .\YobotWebInterface\static .\yobot\src\client\public
-            Copy-Item  .\YobotWebInterface\template .\yobot\src\client\public
+            RemoveFile
+            InstallFile
             Write-Output "更新完成！"
 }
 
@@ -91,6 +105,11 @@ switch ($choice)
             break
         }
         Install
+        DetectVersion
+         if ($Version -eq "3.6.4-rc.2"){
+             rename
+         }
+        Write-Output "安装完成！"
         Exit
     }
     2 
@@ -110,6 +129,7 @@ switch ($choice)
             } 
             else {
                 Update
+                Exit
             }   
             
         }
