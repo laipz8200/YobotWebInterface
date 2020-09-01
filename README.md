@@ -2,6 +2,8 @@
 
 本项目使用[Quasar](https://quasar.dev/)对yobot的web管理界面进行调整，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
 
+**本项目适配yobot[v3.6.4-rc.1]和yobot[v3.6.4-rc.2]版本，对其余版本不保证完全支持，如果使用中遇到兼容性问题，请提交Issue。**
+
 <details>
 <summary>目录</summary>
 
@@ -37,7 +39,7 @@
   - 桌面端`记录`表格新增`第一刀`、`第二刀`、`第三刀`。![desktop_user](https://ihs.arcadia.cool/laipz8200/l5Fz5C.png?x-oss-process=style/zip)
   - 以上所有新增列均支持排序。
 
-> 使用一键脚本安装的用户可以直接使用脚本的`更新`功能进行更新。
+> 使用Linux一键脚本安装的用户可以直接使用脚本的`更新`功能进行更新。
 
 
 <details>
@@ -87,6 +89,7 @@
 1. Windows用户下载本项目下的Powershell一键安装脚本`WebUIOneKeyScript.ps1`。[下载地址](https://github.com/laipz8200/YobotWebInterface/releases)
 2. 将脚本放置在**和yobot安装目录同级的位置**，如果你不知道我说的是哪里，请参考下方的[脚本位置说明](#脚本位置说明)。
 3. 在Powershell中运行脚本。
+4. 如果yobot版本为[v3.6.4-rc.2]，安装完成后需要用`yobot/src/client/public/template/`目录下的`user-info-rc2.html`文件替换掉`user-info.html`文件(即改名覆盖)。
 
 > 注意，Windows一键脚本暂不支持联网更新。
 
@@ -123,6 +126,7 @@ modules
 1. clone本项目或下载zip到本地并解压。
 2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
 3. 将项目目录中的`static`和`template`两个文件夹移动到`yobot/src/client/public/`中(就是之前那两个文件夹在的地方)。
+4. 如果yobot版本为[v3.6.4-rc.2]，安装完成后需要用`yobot/src/client/public/template/`目录下的`user-info-rc2.html`文件替换掉`user-info.html`文件(即改名覆盖)。
 
 ### 更新和卸载
 
