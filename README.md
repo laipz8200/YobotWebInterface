@@ -1,4 +1,4 @@
-# YobotWebInterface
+# Yobot Web Interface
 
 <img align="right" src="https://cdn.quasar.dev/app-icons/favicon-96x96.png" alt="logo" width="96px" />
 
