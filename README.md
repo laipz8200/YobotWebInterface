@@ -1,36 +1,31 @@
-# YobotWebInterface 
+# YobotWebInterface
 
-本项目使用[Quasar](https://quasar.dev/)对yobot的web管理界面进行调整，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
+<img align="right" src="https://cdn.quasar.dev/app-icons/favicon-96x96.png" alt="logo" width="96px" />
 
-**本项目适配yobot[v3.6.4-rc.1]和yobot[v3.6.4-rc.2]版本，对其余版本不保证完全支持，如果使用中遇到兼容性问题，请提交Issue。**
+使用Quasar的yobot外观模板，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
+
+<img src="https://img.shields.io/badge/quasar_verrsion-v1.13.1-lightgreen"/> <img src="https://img.shields.io/badge/yobot_version-3.6.4-lightgrey" /> <img src="https://img.shields.io/badge/built_by-laipz8200-9cf"/>
+
+## 目录
+
+- [使用方式](#使用方式)
+  - [一键安装](#一键安装)
+  - [手动安装](#手动安装)
+  - [更新和卸载](#更新和卸载)
+- [补充](#补充)
+  - [关于修改状态](#关于修改状态)
+  - [关于Dialog](#关于dialog)
+  - [关于表格](#关于表格)
+  - [关于缩放](#关于缩放)
+  - [关于自定义](#关于自定义)
+  - [关于访问卡顿](#关于访问卡顿)
+- [声明](#声明)
+- [致谢](#致谢)
+- [交流](#交流)
 
 <details>
-<summary>目录</summary>
-
-- [YobotWebInterface](#yobotwebinterface)
-    - [最近更新](#最近更新)
-  - [使用方式](#使用方式)
-    - [一键安装](#一键安装)
-      - [Linux](#linux)
-      - [Windows](#windows)
-      - [脚本位置说明](#脚本位置说明)
-    - [手动安装](#手动安装)
-    - [更新和卸载](#更新和卸载)
-  - [补充](#补充)
-    - [关于修改状态](#关于修改状态)
-    - [关于Dialog](#关于dialog)
-    - [关于表格](#关于表格)
-    - [关于缩放](#关于缩放)
-    - [关于自定义](#关于自定义)
-    - [关于访问卡顿](#关于访问卡顿)
-  - [声明](#声明)
-  - [致谢](#致谢)
-  - [交流](#交流)
-
-</details>
-
-### 最近更新
-
+<summary>历史更新</summary>
+    
 2020/8/27
 
 - 对`查刀`和`记录`页面的表格进行优化，具体改变如下：
@@ -40,10 +35,6 @@
   - 以上所有新增列均支持排序。
 
 > 使用Linux一键脚本安装的用户可以直接使用脚本的`更新`功能进行更新。
-
-
-<details>
-<summary>历史更新</summary>
 
 2020/8/26
 
@@ -66,8 +57,6 @@
 
 ![shell](https://ihs.arcadia.cool/laipz8200/Screen%20Shot%202020-08-21%20at%2011.28.57%20PM.png?x-oss-process=style/zip)
 </details>
-
------
 
 ## 使用方式
 
