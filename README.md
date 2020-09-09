@@ -2,9 +2,9 @@
 
 <img align="right" src="https://cdn.quasar.dev/app-icons/favicon-96x96.png" alt="logo" width="96px" />
 
-使用Quasar的yobot外观模板，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
+使用Quasar的Yobot外观模板，提供对PC和移动端更好的布局适配以及更友好的交互逻辑。
 
-<img src="https://img.shields.io/badge/quasar_verrsion-v1.13.1-lightgreen"/> <img src="https://img.shields.io/badge/yobot_version-3.6.4-lightgrey" /> <img src="https://img.shields.io/badge/built_by---LAN---9cf"/>
+<img src="https://img.shields.io/badge/Quasar_version-v1.13.1-lightgreen"/> <img src="https://img.shields.io/badge/Yobot_version-3.6.4-lightgrey" /> <img src="https://img.shields.io/badge/built_by---LAN---9cf"/>
 
 ## 目录
 
