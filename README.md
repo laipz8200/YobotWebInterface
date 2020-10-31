@@ -75,7 +75,7 @@
 2. 运行以下命令
 
     ```shell
-    bash <(curl -s -L https://github.com/laipz8200/YobotWebInterface/releases/download/v1.0/WebUIOneKeyScript.sh)
+    bash <(curl -s -L https://github.com/laipz8200/YobotWebInterface/releases/download/v1.1/WebUIOneKeyScript.sh)
     ```
 
 3. 你也可以在[发布页](https://github.com/laipz8200/YobotWebInterface/releases)手动下载脚本并安装。
