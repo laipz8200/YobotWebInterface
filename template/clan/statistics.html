@@ -83,13 +83,14 @@
                 <q-img src="{{ url_for('yobot_static', filename='statistics/statistical_figure.webp') }}">
                   <div class="absolute-top">
                     <span class="text-h6">数据图表</span>
-                    <span class="text-caption">by <a target="_blank" href="https://github.com/Diving-Fish">@Diving-Fish</a> & <a
-                        target="_blank" href="https://github.com/winrey">@Winrey</a></span>
+                    <span class="text-caption">by <a target="_blank"
+                        href="https://github.com/Diving-Fish">@Diving-Fish</a> & <a target="_blank"
+                        href="https://github.com/winrey">@Winrey</a></span>
                   </div>
                 </q-img>
 
                 <q-card-actions>
-                  <q-btn type="a" href="./2/" flat class="full-width">立即查看</q-btn>
+                  <q-btn type="a" href="./2/" target="_blank" flat class="full-width">立即查看</q-btn>
                 </q-card-actions>
               </q-card>
             </div>
@@ -99,12 +100,29 @@
                 <q-img src="{{ url_for('yobot_static', filename='statistics/order.webp') }}">
                   <div class="absolute-top">
                     <span class="text-h6">出刀顺序表</span>
-                    <span class="text-caption">by <a target="_blank" href="https://github.com/Ai-Himmel">@Ai-Himmel</a></span>
+                    <span class="text-caption">by <a target="_blank"
+                        href="https://github.com/Ai-Himmel">@Ai-Himmel</a></span>
                   </div>
                 </q-img>
 
                 <q-card-actions>
-                  <q-btn type="a" href="./1/" flat class="full-width">立即查看</q-btn>
+                  <q-btn type="a" href="./1/" target="_blank" flat class="full-width">立即查看</q-btn>
+                </q-card-actions>
+              </q-card>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 q-pa-xs">
+              <q-card class="my-card">
+                <q-img src="{{ url_for('yobot_static', filename='statistics/deviation.webp') }}">
+                  <div class="absolute-top">
+                    <span class="text-h6">均值偏差</span>
+                    <span class="text-caption">by <a target="_blank"
+                        href="https://github.com/Alive24">@Alive24</a></span>
+                  </div>
+                </q-img>
+
+                <q-card-actions>
+                  <q-btn type="a" :href="url" target="_blank" flat class="full-width">立即查看(需要API访问)</q-btn>
                 </q-card-actions>
               </q-card>
             </div>
@@ -114,12 +132,13 @@
                 <q-img src="{{ url_for('yobot_static', filename='statistics/multidimensional.webp') }}">
                   <div class="absolute-top">
                     <span class="text-h6">多维度分析</span>
-                    <span class="text-caption">by <a target="_blank" href="https://github.com/Tan90Qian">@Tan90Qian</a></span>
+                    <span class="text-caption">by <a target="_blank"
+                        href="https://github.com/Tan90Qian">@Tan90Qian</a></span>
                   </div>
                 </q-img>
 
                 <q-card-actions>
-                  <q-btn type="a" :href="url" flat class="full-width">立即查看(需要API访问)</q-btn>
+                  <q-btn type="a" :href="url" target="_blank" flat class="full-width">立即查看(需要API访问)</q-btn>
                 </q-card-actions>
               </q-card>
             </div>
@@ -224,12 +243,14 @@ i
       activeIndex: '4',
       apiurl: '',
       url: '#',
+      url2: '#'
     },
     mounted() {
       var apikey = "{{ apikey }}";
       var apiurl = window.location.href + "api/?apikey=" + apikey
       this.apiurl = apiurl;
       this.url = "http://tools.yobot.win/pcrd-yobot-fe/#" + encodeURIComponent(apiurl)
+      this.url2 = "http://clan-battle-analyzer.pcrbot.com/?apiURL=" + encodeURIComponent(apiurl)
     },
     methods: {
       doCopy() {

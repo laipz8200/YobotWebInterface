@@ -38,7 +38,7 @@ install_file() {
 }
 
 replace_for_rc2() {
-    mv yobot/src/client/public/template/user-info-rc2.html yobot/src/client/public/template/user-info.html 
+    mv yobot/src/client/public/template/user-info-rc2.html yobot/src/client/public/template/user-info.html
 }
 
 delete_file() {
@@ -47,15 +47,15 @@ delete_file() {
 }
 
 find_yobot() {
-    if [ ! -d $yobot_dir ];then
+    if [ ! -d $yobot_dir ]; then
         echo "未找到yobot目录，无法执行安装"
         exit 1
     fi
 }
 
 echo "================= 执行操作前请先确认本脚本与yobot目录同级 =================="
-echo "1. 为yobot[v3.6.4-rc.1]安装"
-echo "2. 为yobot[v3.6.4-rc.2]安装"
+echo "1. 为yobot[v3.6.4-rc.1]或更早版本安装"
+echo "2. 为yobot[v3.6.4-rc.2]或更新版本安装"
 echo "3. 更新(适用于之前使用本脚本安装美化的人)"
 echo "4. 卸载并恢复(适用于之前使用本脚本安装美化的人)"
 echo "===============================   警告   ==================================="
@@ -64,7 +64,7 @@ echo "当前脚本运行位置: $workdir"
 read -p "请选择要执行的操作:" select
 if [ $select == "1" ]; then
     find_yobot
-    if [ ! -d $target_dir ];then
+    if [ ! -d $target_dir ]; then
         download_from_github
     else
         echo "已有项目目录，建议选择更新"
@@ -129,5 +129,5 @@ elif [ $select == "4" ]; then
     rm -r YobotWebInterface
     echo "卸载完毕，感谢您的使用"
 else
-echo "输入无效. 请输入[1-4]中的数字"
+    echo "输入无效. 请输入[1-4]中的数字"
 fi

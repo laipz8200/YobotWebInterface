@@ -8,6 +8,7 @@
 
 ## 目录
 
+- [目录](#目录)
 - [使用方式](#使用方式)
   - [一键安装](#一键安装)
   - [手动安装](#手动安装)
@@ -18,13 +19,19 @@
   - [关于表格](#关于表格)
   - [关于缩放](#关于缩放)
   - [关于自定义](#关于自定义)
-  - [关于访问卡顿](#关于访问卡顿)
 - [声明](#声明)
 - [致谢](#致谢)
 - [交流](#交流)
 
 <details>
 <summary>历史更新</summary>
+
+2020/10/31
+
+- 追加了`均值偏差`的统计入口。
+- 所有统计页面修改为在新选项卡打开。
+- 因为版本更替，修改了安装脚本中的说明文字。
+- `说明`页信息更新。
     
 2020/8/27
 
@@ -115,7 +122,7 @@ modules
 1. clone本项目或下载zip到本地并解压。
 2. 在`yobot/src/client/public`目录下新建`backup`文件夹，并将`static`和`template`两个文件夹移动至`backup`。
 3. 将项目目录中的`static`和`template`两个文件夹移动到`yobot/src/client/public/`中(就是之前那两个文件夹在的地方)。
-4. 如果yobot版本为[v3.6.4-rc.2]，安装完成后需要用`yobot/src/client/public/template/`目录下的`user-info-rc2.html`文件替换掉`user-info.html`文件(即改名覆盖)。
+4. 如果yobot是[v3.6.4-rc.2]或更新的版本，安装完成后需要用`yobot/src/client/public/template/`目录下的`user-info-rc2.html`文件替换掉`user-info.html`文件(即改名覆盖)。
 
 ### 更新和卸载
 
@@ -148,10 +155,6 @@ modules
 ### 关于自定义
 
 `static`目录中可以更换应用的图标和背景，用同名文件替换即可。
-
-### 关于访问卡顿
-
-访问卡顿可能是由于CDN访问缓慢导致的，通常不会遇到，如果实在访问不了建议有能力的手动更换CDN地址，或试试[YoCool](https://github.com/A-kirami/YoCool)。
 
 ## 声明
 
